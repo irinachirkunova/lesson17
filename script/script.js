@@ -104,6 +104,76 @@ window.addEventListener('DOMContentLoaded', function() {
 
     togglePopUp();
 
+    //send-ajax-form popup
+
+        const sendFormThree = () => {
+
+        const inputName = document.getElementById('form3-name'),
+              inputEmail = document.getElementById('form3-email'),
+              inputPhone = document.getElementById('form3-phone');
+
+        const errorMessage = 'Что то пошло не так...',
+                loadMessage = 'Загрузка...',
+                successMessage = 'Спасибо! Мы скоро с вами свяжемся';
+
+        const form = document.getElementById('form3');
+
+        const statusMessage = document.createElement('div');
+        statusMessage.style.cssText = 'color: white;'
+
+        form.addEventListener('submit', (event) => {
+            event.preventDefault();
+            form.appendChild(statusMessage);
+            statusMessage.textContent = loadMessage;
+            const formData = new FormData(form);
+            let body = {}
+
+            formData.forEach((val, key) => {
+                body[key] = val;
+            });
+
+            postData(body, 
+                () => {
+                inputName.value = '';
+                inputEmail.value = '';
+                inputPhone.value = '';
+                
+                statusMessage.textContent = successMessage;
+                }, 
+                (error) => {
+                    statusMessage.textContent = errorMessage;
+                    console.error(error);
+                });
+        
+        });
+
+        const postData = (body, outputData, errorData) => {
+            
+            const request = new XMLHttpRequest();
+
+            request.addEventListener('readystatechange', () => {
+                if(request.readyState !== 4) {
+                    return;
+                }
+                if(request.status === 200) {
+                    outputData();    
+                }
+                else {
+                    errorData(request.status); 
+                }
+            });
+
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-Type', 'application/json');
+
+
+            request.send(JSON.stringify(body));     
+        }
+
+    };
+
+    sendFormThree();
+
     //табы
     
     const tabs = () => {
@@ -360,6 +430,10 @@ window.addEventListener('DOMContentLoaded', function() {
     //send-ajax-form
 
     const sendForm = () => {
+        const inputName = document.getElementById('form1-name'),
+              inputEmail = document.getElementById('form1-email'),
+              inputPhone = document.getElementById('form1-phone');
+
         const errorMessage = 'Что то пошло не так...',
               loadMessage = 'Загрузка...',
               successMessage = 'Спасибо! Мы скоро с вами свяжемся';
@@ -382,7 +456,11 @@ window.addEventListener('DOMContentLoaded', function() {
 
             postData(body, 
                 () => {
-                statusMessage.textContent = successMessage;
+                    inputName.value = '';
+                    inputEmail.value = '';
+                    inputPhone.value = '';
+
+                    statusMessage.textContent = successMessage;
                 }, 
                 (error) => {
                     statusMessage.textContent = errorMessage;
@@ -435,24 +513,6 @@ window.addEventListener('DOMContentLoaded', function() {
     
             const statusMessage = document.createElement('div');
             statusMessage.style.cssText = 'font-size: 2rem;'
-
-            const validationNumber = () => {
-                inputPhone.value = inputPhone.value.replace(/[^0-9+]/g, ''); 
-            };
-
-            inputPhone.addEventListener('input', validationNumber); 
-            
-            const validationInputName = () => {
-                inputName.value = inputName.value.replace(/[^а-я\s]/g, '');
-            }
-
-            inputName.addEventListener('input', validationInputName); 
-
-            const validationInputMessage = () => {
-                inputMessage.value = inputMessage.value.replace(/[^а-я\s]/g, '');
-            }
-
-            inputMessage.addEventListener('input', validationInputMessage); 
     
             form.addEventListener('submit', (event) => {
                 event.preventDefault();
@@ -507,5 +567,43 @@ window.addEventListener('DOMContentLoaded', function() {
         };
     
         sendFormTwo();
+
+    //validation inputs
+        const validationInputs = () => {
+            let inputNames = document.querySelectorAll('input[name="user_name"]'),
+                inputPhones = document.querySelectorAll('input[name="user_phone"]'),
+                inputMessages = document.querySelector('.mess');
+
+
+            const validationInputName = () => {
+
+                for(let item of inputNames) {
+                    item.value = item.value.replace(/[^А-Яа-я\s]/g, '');
+                }               
+            }
+            
+            for(let item of inputNames) {
+                item.addEventListener('input', validationInputName); 
+            }
+                            
+            const validationNumber = () => {
+
+                for(let item of inputPhones) {
+                    item.value = item.value.replace(/[^0-9+]/g, ''); 
+                }  
+            };
+
+            for(let item of inputPhones) {
+                item.addEventListener('input', validationNumber); 
+            }          
+
+            const validationInputMessage = () => {
+                inputMessages.value = inputMessages.value.replace(/[^А-Яа-я\s]/g, '');
+            }
+
+            inputMessages.addEventListener('input', validationInputMessage); 
+        }
+
+        validationInputs();
 
 })
