@@ -366,13 +366,13 @@ window.addEventListener('DOMContentLoaded', function() {
                 form.appendChild(statusMessage);
                 statusMessage.textContent = loadMessage;
                 const formData = new FormData(form);
-                /*let body = {}
+                let body = {}
     
                 formData.forEach((val, key) => {
                     body[key] = val;
-                });*/
+                });
     
-                    postData(formData)
+                    postData(body)
                             .then((response) => {
                                 for(let input of inputName) {
                                     input.value = '';
@@ -400,13 +400,13 @@ window.addEventListener('DOMContentLoaded', function() {
     
         }
 
-        const postData = (formData) => {
+        const postData = (body) => {
             return fetch('./server.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: formData, //JSON.stringify(body),
+                body: JSON.stringify(body),
                 credentials: 'include'
             });
 
