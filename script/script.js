@@ -366,14 +366,14 @@ window.addEventListener('DOMContentLoaded', function() {
                 form.appendChild(statusMessage);
                 statusMessage.textContent = loadMessage;
                 const formData = new FormData(form);
-                let body = {}
+                /*let body = {}
     
                 formData.forEach((val, key) => {
                     body[key] = val;
-                });
+                });*/
     
-                    postData(body)
-                            .then(successMessage => {
+                    postData(formData)
+                            .then((response) => {
                                 for(let input of inputName) {
                                     input.value = '';
                                 }
@@ -385,9 +385,13 @@ window.addEventListener('DOMContentLoaded', function() {
                               
                                 }
                                 inputMessage.value = '';
+                                if(response.status !== 200) {
+                                    throw new Error('status network not 200');
+
+                                }
                                 statusMessage.textContent = successMessage;
                             })
-                            .catch(errorMessage => 
+                            .catch((error) => 
                                 statusMessage.textContent = errorMessage
 
                             );
@@ -396,33 +400,16 @@ window.addEventListener('DOMContentLoaded', function() {
     
         }
 
-        const postData = (body) => {
-
-            return new Promise((resolve, rejected) => {
-                const request = new XMLHttpRequest();
-
-                request.addEventListener('readystatechange', () => {
-                    if(request.readyState !== 4) {
-                        return;
-                    }
-                    if(request.status === 200) {
-                        resolve(successMessage);
-     
-                    }
-                    else {
-                        rejected(request.status);
-                      
-                    }
-                });
-    
-                request.open('POST', './server.php');
-                request.setRequestHeader('Content-Type', 'application/json');
-    
-    
-                request.send(JSON.stringify(body));  
-                
+        const postData = (formData) => {
+            return fetch('./server.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: formData, //JSON.stringify(body),
+                credentials: 'include'
             });
-   
+
         }
 
     };
@@ -468,3 +455,4 @@ window.addEventListener('DOMContentLoaded', function() {
         validationInputs();
 
 })
+
